@@ -1,41 +1,46 @@
-/* 悬浮球：强制置顶、右侧悬浮 */
-#st-native-snow-btn {
-    position: fixed !important;
-    top: 20%;
-    right: 10px;
-    width: 50px;
-    height: 50px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    color: white;
-    font-size: 24px;
+/* 全屏画布 - 必须穿透鼠标 */
+#st-ambient-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0; /* 放在背景层之上，UI之下 */
+}
+
+/* 扩展菜单里的设置面板样式 */
+.ambient-settings-box {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+    border: 1px solid var(--SmartThemeBorderColor);
+}
+
+.ambient-control-row {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-    z-index: 2147483647; /* 宇宙最高层级 */
-    user-select: none;
-    backdrop-filter: blur(4px);
-    transition: transform 0.2s, background 0.2s;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--SmartThemeBodyColor);
 }
 
-#st-native-snow-btn.active {
-    background: rgba(40, 200, 80, 0.9);
-    box-shadow: 0 0 15px rgba(40, 200, 80, 0.6);
+.ambient-control-row label {
+    flex: 1;
 }
 
-.st-native-flake {
-    position: fixed !important;
-    top: -30px;
-    color: white;
-    font-size: 20px;
-    pointer-events: none !important;
-    z-index: 2147483646;
-    text-shadow: 0 0 2px black;
-    animation: st-fall 5s linear infinite;
+.ambient-control-row input[type="range"],
+.ambient-control-row select,
+.ambient-control-row input[type="color"] {
+    flex: 1;
+    max-width: 50%;
 }
 
-@keyframes st-fall {
-    to { transform: translateY(110vh) rotate(360deg); }
+.ambient-desc {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 10px;
+    text-align: center;
 }
