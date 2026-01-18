@@ -18,7 +18,7 @@ jQuery(async () => {
         config = { ...config, ...JSON.parse(saved) };
     }
 
-    // --- 1. 粒子系统 (不使用 Emoji，纯代码绘图) ---
+    // --- 1. 粒子系统 ---
     let ctx;
     let particles = [];
     let w, h;
@@ -65,16 +65,16 @@ jQuery(async () => {
 
             // 根据类型画出不同的形状
             switch (config.type) {
-                case 'star': // 画星星 (十字光)
+                case 'star': // 画星星
                     this.drawStar(ctx, this.size);
                     break;
-                case 'flower': // 画花瓣 (5瓣)
+                case 'flower': // 画花瓣
                     this.drawflower(ctx, this.size);
                     break;
-                case 'leaf': // 画叶子 (椭圆)
+                case 'leaf': // 画叶子
                     this.drawLeaf(ctx, this.size);
                     break;
-                case 'snow': // 默认为圆点 (雪花/萤火虫)
+                case 'snow': // 默认为圆点
                 default:
                     ctx.beginPath();
                     ctx.arc(0, 0, this.size, 0, Math.PI * 2);
@@ -123,7 +123,10 @@ jQuery(async () => {
         if (!canvas) {
             canvas = document.createElement('canvas');
             canvas.id = CANVAS_ID;
-            document.body.prepend(canvas); // 放在最底层背景之上
+            
+            // 【修改点】改为 appendChild，确保放在 DOM 结构的最后
+            // 配合 CSS 的 z-index，它将覆盖在所有元素之上
+            document.body.appendChild(canvas); 
         }
         ctx = canvas.getContext('2d');
         
@@ -164,14 +167,11 @@ jQuery(async () => {
 
     // --- 2. 菜单注入 (UI) ---
     function injectSettingsMenu() {
-        // 找到酒馆的扩展列表容器 (你的截图显示的是 Extensions 下拉列表)
-        // 通常 ID 是 extensions_settings 或者我们自己插入一个 Drawer
         const container = $('#extensions_settings'); 
         
         if (container.length === 0) return;
         if ($(`#${MENU_ID}`).length) return;
 
-        // 构造 HTML：模仿酒馆原生的折叠菜单结构
         const html = `
             <div id="${MENU_ID}" class="inline-drawer">
                 <div class="inline-drawer-toggle inline-drawer-header">
@@ -222,13 +222,11 @@ jQuery(async () => {
         container.append(html);
 
         // 绑定事件
-        // 1. 折叠开关
         $(`#${MENU_ID} .inline-drawer-toggle`).on('click', function() {
             $(this).parent().toggleClass('expanded');
             $(this).find('.inline-drawer-icon').toggleClass('fa-angle-down fa-angle-up');
         });
 
-        // 2. 各种输入框变化
         $('#ambient_enabled').on('change', function() {
             config.enabled = $(this).is(':checked');
             saveConfig();
@@ -242,7 +240,7 @@ jQuery(async () => {
             else if(config.type === 'star') config.color = '#fff6cc';
             $('#ambient_color').val(config.color);
             saveConfig();
-            resetParticles(); // 重置形状
+            resetParticles(); 
         });
         $('#ambient_color').on('input', function() { config.color = $(this).val(); saveConfig(); });
         $('#ambient_size').on('input', function() { config.size = parseFloat($(this).val()); saveConfig(); resetParticles(); });
@@ -257,16 +255,13 @@ jQuery(async () => {
     }
 
     function resetParticles() {
-        // 清空现有粒子，让它们重新以新形态生成
         particles = [];
     }
 
     // --- 启动流程 ---
     initCanvas();
     
-    // 延迟注入菜单，等待酒馆UI加载完毕
-    // 监听酒馆的扩展加载完毕信号（如果不支持则用定时器兜底）
+    // 定时检查注入
     setTimeout(injectSettingsMenu, 2000);
-    // 为了防止切换页面导致菜单消失，定期检查
     setInterval(injectSettingsMenu, 3000);
 });
