@@ -1,68 +1,56 @@
-/* 全屏画布 - 必须穿透鼠标 */
+/* 全屏画布 */
 #st-ambient-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none; /* 关键：鼠标穿透 */
-    z-index: 2147483647; /* 宇宙最高层级 */
+    pointer-events: none;
+    z-index: 2147483647;
 }
 
-/* --- 菜单面板样式 (原生风格重构) --- */
-
+/* 菜单样式 */
 .ambient-settings-box {
-    /* 核心修改：去掉黑色背景和边框，改为透明 */
-    background: transparent;
-    border: none;
     padding: 0 5px;
-    margin-top: 0;
     width: 100%;
 }
 
-/* 描述文字 */
 .ambient-desc {
     font-size: 12px;
     opacity: 0.6;
     margin: 5px 0 10px 0;
     text-align: center;
     font-style: italic;
-    color: var(--SmartThemeBodyColor); /* 适配主题文字颜色 */
+    color: var(--SmartThemeBodyColor);
 }
 
-/* 每一行的样式 - 仿照原生列表项 */
 .ambient-control-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
     font-size: 14px;
-    color: var(--SmartThemeBodyColor); /* 适配主题文字颜色 */
-    /* 加一条极淡的分割线，看起来更整齐 */
-    border-bottom: 1px solid var(--SmartThemeBorderColor); 
+    color: var(--SmartThemeBodyColor);
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
 }
 
-/* 最后一行去掉分割线 */
 .ambient-control-row:last-child {
     border-bottom: none;
 }
 
-/* 左侧标签 */
 .ambient-control-row label {
     flex: 1;
     font-weight: 500;
 }
 
-/* 右侧控件 (滑块、下拉框、颜色) */
 .ambient-control-row input[type="range"],
 .ambient-control-row select,
 .ambient-control-row input[type="color"] {
     flex: 1;
-    max-width: 50%; /* 限制宽度，防止挤压文字 */
+    max-width: 50%;
     cursor: pointer;
 }
 
-/* 复选框稍微大一点 */
 .ambient-control-row input[type="checkbox"] {
     width: 18px;
     height: 18px;
