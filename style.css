@@ -5,8 +5,8 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none;
-    z-index: 0; /* 放在背景层之上，UI之下 */
+    pointer-events: none; /* 关键：让鼠标能点透雪花，操作下面的界面 */
+    z-index: 2147483647; /* 宇宙最高层级，覆盖一切 */
 }
 
 /* 扩展菜单里的设置面板样式 */
