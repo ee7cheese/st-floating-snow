@@ -5,178 +5,103 @@ jQuery(async () => {
     // --- 默认配置 ---
     let config = {
         enabled: false,
-        type: 'snow',   // snow, star, flower, leaf
+        type: 'snow',
         speed: 2,
         size: 3,
         count: 100,
         color: '#ffffff'
     };
 
-    // 读取保存的配置
     const saved = localStorage.getItem('st_ambient_config');
-    if (saved) {
-        config = { ...config, ...JSON.parse(saved) };
-    }
+    if (saved) config = { ...config, ...JSON.parse(saved) };
 
     // --- 1. 粒子系统 ---
-    let ctx;
-    let particles = [];
-    let w, h;
-    let animationFrame;
+    let ctx, particles = [], w, h, animationFrame;
 
-    // 粒子类
     class Particle {
-        constructor() {
-            this.reset(true);
-        }
-
+        constructor() { this.reset(true); }
         reset(initial = false) {
             this.x = Math.random() * w;
             this.y = initial ? Math.random() * h : -20;
-            this.size = Math.random() * config.size + (config.size / 2); // 大小浮动
-            
-            // 速度基于配置
+            this.size = Math.random() * config.size + (config.size / 2);
             this.speedY = (Math.random() * 0.5 + 0.5) * config.speed; 
             this.speedX = (Math.random() - 0.5) * (config.speed * 0.5); 
-            
-            // 旋转 (用于叶子/花瓣)
             this.angle = Math.random() * 360;
             this.spin = (Math.random() - 0.5) * 2; 
-
             this.opacity = Math.random() * 0.5 + 0.3;
         }
-
         update() {
             this.y += this.speedY;
-            this.x += this.speedX + Math.sin(this.y * 0.01) * 0.5; // 加入一点左右摇摆
+            this.x += this.speedX + Math.sin(this.y * 0.01) * 0.5;
             this.angle += this.spin;
-
-            if (this.y > h + 20 || this.x > w + 20 || this.x < -20) {
-                this.reset();
-            }
+            if (this.y > h + 20 || this.x > w + 20 || this.x < -20) this.reset();
         }
-
         draw() {
             ctx.save();
             ctx.translate(this.x, this.y);
             ctx.rotate(this.angle * Math.PI / 180);
             ctx.globalAlpha = this.opacity;
             ctx.fillStyle = config.color;
-
-            // 根据类型画出不同的形状
             switch (config.type) {
-                case 'star': // 画星星
-                    this.drawStar(ctx, this.size);
-                    break;
-                case 'flower': // 画花瓣
-                    this.drawflower(ctx, this.size);
-                    break;
-                case 'leaf': // 画叶子
-                    this.drawLeaf(ctx, this.size);
-                    break;
-                case 'snow': // 默认为圆点
+                case 'star': this.drawStar(ctx, this.size); break;
+                case 'flower': this.drawflower(ctx, this.size); break;
+                case 'leaf': this.drawLeaf(ctx, this.size); break;
                 default:
                     ctx.beginPath();
                     ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-                    ctx.shadowBlur = 5; // 发光效果
-                    ctx.shadowColor = config.color;
-                    ctx.fill();
+                    ctx.shadowBlur = 5; ctx.shadowColor = config.color; ctx.fill();
                     break;
             }
             ctx.restore();
         }
-
         drawStar(c, r) {
-            c.beginPath();
-            c.moveTo(0, -r);
-            c.quadraticCurveTo(2, -2, r, 0);
-            c.quadraticCurveTo(2, 2, 0, r);
-            c.quadraticCurveTo(-2, 2, -r, 0);
-            c.quadraticCurveTo(-2, -2, 0, -r);
-            c.fill();
+            c.beginPath(); c.moveTo(0, -r);
+            c.quadraticCurveTo(2, -2, r, 0); c.quadraticCurveTo(2, 2, 0, r);
+            c.quadraticCurveTo(-2, 2, -r, 0); c.quadraticCurveTo(-2, -2, 0, -r); c.fill();
         }
-
         drawLeaf(c, r) {
-            c.beginPath();
-            c.ellipse(0, 0, r, r/2, 0, 0, Math.PI * 2);
-            c.fill();
-            c.beginPath(); // 叶脉
-            c.strokeStyle = "rgba(0,0,0,0.2)";
-            c.moveTo(-r, 0);
-            c.lineTo(r, 0);
-            c.stroke();
+            c.beginPath(); c.ellipse(0, 0, r, r/2, 0, 0, Math.PI * 2); c.fill();
+            c.beginPath(); c.strokeStyle = "rgba(0,0,0,0.2)"; c.moveTo(-r, 0); c.lineTo(r, 0); c.stroke();
         }
-        
         drawflower(c, r) {
-            // 简单的花瓣形状
-            c.beginPath();
-            c.moveTo(0, 0);
-            c.bezierCurveTo(r, -r, r*2, 0, 0, r);
-            c.bezierCurveTo(-r*2, 0, -r, -r, 0, 0);
-            c.fill();
+            c.beginPath(); c.moveTo(0, 0);
+            c.bezierCurveTo(r, -r, r*2, 0, 0, r); c.bezierCurveTo(-r*2, 0, -r, -r, 0, 0); c.fill();
         }
     }
 
     function initCanvas() {
-        // 创建画布
         let canvas = document.getElementById(CANVAS_ID);
         if (!canvas) {
             canvas = document.createElement('canvas');
             canvas.id = CANVAS_ID;
-            
-            // 【修改点】改为 appendChild，确保放在 DOM 结构的最后
-            // 配合 CSS 的 z-index，它将覆盖在所有元素之上
             document.body.appendChild(canvas); 
         }
         ctx = canvas.getContext('2d');
-        
-        // 尺寸处理
-        const resize = () => {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        };
+        const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
         window.addEventListener('resize', resize);
         resize();
-
-        // 启动循环
         loop();
     }
 
     function loop() {
-        // 清空画布
         ctx.clearRect(0, 0, w, h);
-
         if (config.enabled) {
-            // 确保粒子数量正确
-            if (particles.length < config.count) {
-                while(particles.length < config.count) particles.push(new Particle());
-            } else if (particles.length > config.count) {
-                particles.splice(config.count);
-            }
-
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-        } else {
-            particles = []; // 关闭时清空
-        }
-
+            if (particles.length < config.count) while(particles.length < config.count) particles.push(new Particle());
+            else if (particles.length > config.count) particles.splice(config.count);
+            particles.forEach(p => { p.update(); p.draw(); });
+        } else particles = [];
         animationFrame = requestAnimationFrame(loop);
     }
 
     // --- 2. 菜单注入 (UI) ---
     function injectSettingsMenu() {
         const container = $('#extensions_settings'); 
-        
-        if (container.length === 0) return;
-        if ($(`#${MENU_ID}`).length) return;
-
+        if (container.length === 0 || $(`#${MENU_ID}`).length) return;
         const html = `
             <div id="${MENU_ID}" class="inline-drawer">
                 <div class="inline-drawer-toggle inline-drawer-header">
-                    <b>氛围特效 ✨</b>
-                    <div class="inline-drawer-icon fa-solid fa-angle-down"></div>
+                    <b>✨ 氛围特效 (Ambient)</b>
+                    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down"></div>
                 </div>
                 <div class="inline-drawer-content ambient-settings-box">
                     <div class="ambient-desc">自定义你的背景氛围效果</div>
@@ -185,83 +110,8 @@ jQuery(async () => {
                         <label>启用特效</label>
                         <input type="checkbox" id="ambient_enabled" ${config.enabled ? 'checked' : ''}>
                     </div>
-
                     <div class="ambient-control-row">
                         <label>特效类型</label>
                         <select id="ambient_type">
                             <option value="snow">❄️ 柔光雪花</option>
-                            <option value="star">✨ 闪烁星光</option>
-                            <option value="leaf">🍃 飘落树叶</option>
-                            <option value="flower">💐 飞舞花瓣</option>
-                        </select>
-                    </div>
-
-                    <div class="ambient-control-row">
-                        <label>颜色 (Color)</label>
-                        <input type="color" id="ambient_color" value="${config.color}">
-                    </div>
-
-                    <div class="ambient-control-row">
-                        <label>粒子大小</label>
-                        <input type="range" id="ambient_size" min="1" max="10" step="0.5" value="${config.size}">
-                    </div>
-
-                    <div class="ambient-control-row">
-                        <label>飘落速度</label>
-                        <input type="range" id="ambient_speed" min="0.5" max="10" step="0.5" value="${config.speed}">
-                    </div>
-
-                    <div class="ambient-control-row">
-                        <label>粒子密度</label>
-                        <input type="range" id="ambient_count" min="10" max="300" step="10" value="${config.count}">
-                    </div>
-                </div>
-            </div>
-        `;
-
-        container.append(html);
-
-        // 绑定事件
-        $(`#${MENU_ID} .inline-drawer-toggle`).on('click', function() {
-            $(this).parent().toggleClass('expanded');
-            $(this).find('.inline-drawer-icon').toggleClass('fa-angle-down fa-angle-up');
-        });
-
-        $('#ambient_enabled').on('change', function() {
-            config.enabled = $(this).is(':checked');
-            saveConfig();
-        });
-        $('#ambient_type').val(config.type).on('change', function() {
-            config.type = $(this).val();
-            // 切换类型时自动推荐颜色
-            if(config.type === 'leaf') config.color = '#88cc88';
-            else if(config.type === 'flower') config.color = '#ffb7b2';
-            else if(config.type === 'snow') config.color = '#ffffff';
-            else if(config.type === 'star') config.color = '#fff6cc';
-            $('#ambient_color').val(config.color);
-            saveConfig();
-            resetParticles(); 
-        });
-        $('#ambient_color').on('input', function() { config.color = $(this).val(); saveConfig(); });
-        $('#ambient_size').on('input', function() { config.size = parseFloat($(this).val()); saveConfig(); resetParticles(); });
-        $('#ambient_speed').on('input', function() { config.speed = parseFloat($(this).val()); saveConfig(); resetParticles(); });
-        $('#ambient_count').on('input', function() { config.count = parseInt($(this).val()); saveConfig(); });
-
-        console.log("Ambient Menu Injected!");
-    }
-
-    function saveConfig() {
-        localStorage.setItem('st_ambient_config', JSON.stringify(config));
-    }
-
-    function resetParticles() {
-        particles = [];
-    }
-
-    // --- 启动流程 ---
-    initCanvas();
-    
-    // 定时检查注入
-    setTimeout(injectSettingsMenu, 2000);
-    setInterval(injectSettingsMenu, 3000);
-});
+                            <option value="star"
