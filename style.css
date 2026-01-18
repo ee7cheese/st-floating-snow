@@ -1,29 +1,35 @@
-/* 全屏画布 */
+/* 全屏画布 - 必须穿透鼠标，且层级最高 */
 #st-ambient-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none;
-    z-index: 2147483647;
+    pointer-events: none; /* 关键：鼠标穿透 */
+    z-index: 2147483647; /* 宇宙最高层级 */
 }
 
-/* 菜单样式 */
+/* --- 菜单面板样式 (原生融合流) --- */
+
 .ambient-settings-box {
     padding: 0 5px;
     width: 100%;
+    /* 移除背景色，直接使用酒馆主题底色 */
+    background: transparent;
+    border: none;
 }
 
+/* 描述文字 */
 .ambient-desc {
     font-size: 12px;
     opacity: 0.6;
     margin: 5px 0 10px 0;
     text-align: center;
     font-style: italic;
-    color: var(--SmartThemeBodyColor);
+    color: var(--SmartThemeBodyColor); /* 自动适配主题文字颜色 */
 }
 
+/* 每一行的布局 */
 .ambient-control-row {
     display: flex;
     justify-content: space-between;
@@ -31,18 +37,21 @@
     padding: 8px 0;
     font-size: 14px;
     color: var(--SmartThemeBodyColor);
-    border-bottom: 1px solid var(--SmartThemeBorderColor);
+    border-bottom: 1px solid var(--SmartThemeBorderColor); /* 自动适配主题分割线 */
 }
 
+/* 最后一行去掉分割线 */
 .ambient-control-row:last-child {
     border-bottom: none;
 }
 
+/* 左侧标签 */
 .ambient-control-row label {
     flex: 1;
     font-weight: 500;
 }
 
+/* 右侧控件 */
 .ambient-control-row input[type="range"],
 .ambient-control-row select,
 .ambient-control-row input[type="color"] {
