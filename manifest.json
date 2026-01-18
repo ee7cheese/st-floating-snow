@@ -1,9 +1,9 @@
 {
-    "name": "Floating Snow",
-    "display_name": "悬浮飘雪开关",
-    "version": "1.0.0",
+    "name": "Ambient Effects",
+    "display_name": "氛围特效",
+    "version": "2.0.0",
     "author": "User",
-    "description": "点击屏幕右侧的悬浮按钮开启下雪特效。",
+    "description": "集成在扩展菜单中的背景特效工具。支持雪花、星星、飘花、落叶，可自定义颜色、速度和大小。",
     "js": "index.js",
     "css": "style.css",
     "type": "extension"
