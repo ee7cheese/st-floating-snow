@@ -175,7 +175,7 @@ jQuery(async () => {
         const html = `
             <div id="${MENU_ID}" class="inline-drawer">
                 <div class="inline-drawer-toggle inline-drawer-header">
-                    <b>✨ 氛围特效</b>
+                    <b>氛围特效 ✨</b>
                     <div class="inline-drawer-icon fa-solid fa-angle-down"></div>
                 </div>
                 <div class="inline-drawer-content ambient-settings-box">
